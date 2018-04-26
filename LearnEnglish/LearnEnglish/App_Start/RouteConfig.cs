@@ -12,6 +12,7 @@ namespace LearnEnglish
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.IgnoreRoute("Home/Index");
 
             routes.MapRoute(
                 name: "Default",

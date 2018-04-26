@@ -13,6 +13,14 @@ namespace LearnEnglish.Controllers
             return View();
         }
 
+        [HttpPost]
+        public ActionResult Upload()
+        {
+            HttpPostedFileBase postedFile = Request.Files[0];
+
+            return null;
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
