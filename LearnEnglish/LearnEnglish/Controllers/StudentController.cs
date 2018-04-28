@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using LearnEnglish.Models;
+using MongoDB.Bson;
 
 namespace LearnEnglish.Controllers
 {
@@ -32,6 +33,15 @@ namespace LearnEnglish.Controllers
                 await _collection.InsertOneAsync(exercise);
             }
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("Student/Get")]
+        public async Task<IHttpActionResult> Get()
+        {
+            var filter = new BsonDocument();
+            var exerciseList = await _collection.Find(filter).ToListAsync();
+            return Ok(exerciseList);
         }
     }
 }

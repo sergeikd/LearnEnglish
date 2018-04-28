@@ -8,7 +8,7 @@
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs tab-nav-right" role="tablist">
                     <li role="presentation" class="active"><a href="#home" data-toggle="tab">STUDENT</a></li>
-                    <li role="presentation"><a href="#profile" data-toggle="tab">TEACHER</a></li>
+                    <li role="presentation"><a href="#teacher" data-toggle="tab" onclick="getTeacherData()">TEACHER</a></li>
                     <li role="presentation"><a href="#settings" data-toggle="tab">SETTINGS</a></li>
                 </ul>
                 <!-- Tab panes -->
@@ -16,28 +16,46 @@
                     <div role="tabpanel" class="tab-pane fade in active" id="home">
                         <div class="row">
                             <div class="col-md-12">
-                                <audio id="myAudio" class="video-js vjs-default-skin margin-top-75 center-block"></audio>
+                                <audio id="micRecorder" class="video-js vjs-default-skin margin-top-75 center-block"></audio>
                                 <button type="button" class="btn btn-default btn-lg margin-top-20 center-block" onclick="savefile()">Send To Teacher</button>
                             </div>
                         </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane fade" id="profile">
-                        <b>Profile Content</b>
-                        <p>
-                            Lorem ipsum dolor sit amet, ut duo atqui exerci dicunt, ius impedit mediocritatem an. Pri ut tation electram moderatius.
-                            Per te suavitate democritum. Duis nemore probatus ne quo, ad liber essent aliquid
-                            pro. Et eos nusquam accumsan, vide mentitum fabellas ne est, eu munere gubergren
-                            sadipscing mel.
+                        <div id="waveform"></div>
+
+                        <p align="center">
+                            <button class="btn btn-primary" onclick="wavesurfer.playPause()">
+                                <i class="glyphicon glyphicon-play"></i>
+                                Play
+                            </button>
                         </p>
                     </div>
-                    <div role="tabpanel" class="tab-pane fade" id="messages">
-                        <b>Message Content</b>
-                        <p>
-                            Lorem ipsum dolor sit amet, ut duo atqui exerci dicunt, ius impedit mediocritatem an. Pri ut tation electram moderatius.
-                            Per te suavitate democritum. Duis nemore probatus ne quo, ad liber essent aliquid
-                            pro. Et eos nusquam accumsan, vide mentitum fabellas ne est, eu munere gubergren
-                            sadipscing mel.
-                        </p>
+                    <div role="tabpanel" class="tab-pane fade" id="teacher">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Date Time</th>
+                                    <th class="text-center">Checked</th>
+                                    <th class="text-center">Viewed</th>
+                                    <th class="text-center">To Check</th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: { data: exerciseList, as: 'exercise'}">
+                                <tr class="text-center">
+                                    <td>
+                                        <p data-bind="text: exercise.dateTime"></p>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" disabled data-bind="checked: exercise.isChecked" />
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" disabled data-bind="checked: exercise.isViewed" />
+                                    </td>
+                                    <td>
+                                        <a href="#" data-bind="click: check.bind($data)">check</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="settings">
                         <b>Settings Content</b>
@@ -49,6 +67,32 @@
                         </p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="checkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <p data-bind="text: checkModel().id"></p>
+                @*<div id="waveform"></div>
+
+                <p align="center">
+                    <button class="btn btn-primary" onclick="wavesurfer.playPause()">
+                        <i class="glyphicon glyphicon-play"></i>
+                        Play
+                    </button>
+                </p>*@
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>

@@ -1,17 +1,68 @@
 ﻿@{
-    ViewBag.Title = "Contact";
+    Layout = null;
 }
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Audio Output Example - Wavesurfer Plugin for Video.js</title>
+    <link href="//vjs.zencdn.net/6.7.0/video-js.min.css" rel="stylesheet">
+    <link href="~/Content/videojs.wavesurfer.min.css" rel="stylesheet">
 
-<address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
-    <abbr title="Phone">P:</abbr>
-    425.555.0100
-</address>
+    <script src="//vjs.zencdn.net/6.7.0/video.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/2.0.5/wavesurfer.min.js"></script>
+    <script src="~/Scripts/lib/videojs.wavesurfer.min.js"></script>
+    <style>
 
-<address>
-    <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>
+        body {
+            font-weight: 300;
+        }
+
+        /* change player background color */
+        #myPlayback {
+            background-color: #AE57B3;
+        }
+
+        select {
+            margin: 0 0 0.5em 0;
+        }
+
+        .outputSelector {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <audio id="myPlayback" class="video-js vjs-default-skin"></audio>
+    </div>
+
+    <script>
+var player = videojs("myPlayback", {
+    controls: true,
+    width: 600,
+    height: 300,
+    fluid: false,
+    plugins: {
+        wavesurfer: {
+            src: '../Content/hal.wav',
+            msDisplayMax: 10,
+            debug: true,
+            waveColor: '#F2E68A',
+            progressColor: 'black',
+            cursorColor: 'black',
+            hideScrollbar: true
+        }
+    }
+}, function() {
+    // print version information at startup
+    videojs.log('Using video.js', videojs.VERSION,
+        'with videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'));
+});
+
+// error handling
+player.on('error', function(error) {
+    console.log('error:', error);
+});</script>
+</body>
+</html>
