@@ -56,11 +56,10 @@ function getTeacherData() {
 function check(exercise) {
     var url = "Student/GetAudio/" + exercise.id;
     if (player) {
-        var bugs = document.getElementsByClassName("vjs-bug");
-        for (var i = 0; i < bugs.length; i++) {
-            bugs[i].innerHTML = "";
+        var bugs = document.getElementsByClassName("mark");
+        while (bugs.length > 0) {
+            bugs[0].remove();
         }
-        console.log(player);
         player.wavesurfer().load(url);
     }
     else {
@@ -74,8 +73,8 @@ function check(exercise) {
                     src: url,
                     msDisplayMax: 10,
                     debug: true,
-                    waveColor: '#F2E68A',
-                    progressColor: 'black',
+                    waveColor: "#36393b",
+                    progressColor: "black",
                     cursorColor: 'black',
                     hideScrollbar: true
                 }
@@ -106,24 +105,52 @@ function savefile() {
         data: data,
         contentType: false,
         processData: false,
-        success: function (data) {
-            alert("id = " + data);
+        success: function () {
+            console.log("saved successfully");
         },
         error: function () {
-            alert("failed");
+            console.log("failed");
         }
     });
 };
 
-function addBug() {
+function addBug(type) {
     var time = Math.round(player.wavesurfer().getCurrentTime() * 100) / 100;
-    console.log("time = " + time);
+    time -= 0.1;
+    if (time < 0) {
+        time = 0;
+    }
+    var duration = Math.round(player.wavesurfer().getDuration() * 100) / 100;
+    console.log("time = " + time + " duration = " + duration);
+    //var canvas = document.getElementsByTagName("canvas");
+    var canvas = $("#myPlayback canvas")[0];
+    var height = canvas.clientHeight;
+    var width = canvas.clientWidth;
+    var position = width / duration * time;
+    var color;
+    switch  (type)
+    {
+        case 0:
+            color = "red";
+            break;
+        case 1:
+            color = "yellow";
+            break;
+        case 2:
+            color = "green";
+            break;
+        case 3:
+            color = "blue";
+            break;
+        default:
+            color = "gray";
+    }
     player.bug({
-        height: 50,
+        height: height + 'px',
         imgSrc: 'http://cdn.teamcococdn.com/image/frame:1/teamcoco_twitter_128x128.png',
         opacity: 0.5,
-        padding: '8px',
-        position: 'tl',
-        width: 50
+        padding: position + 'px',
+        width: 10 + "px",
+        color: color
     });
 }

@@ -34,3 +34,13 @@ textarea {
 #checkModal .modal-content {
     min-width: 640px;
 }
+
+.mark {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+#micRecorder, #myPlayback {
+    background-color: #EEE;
+}
