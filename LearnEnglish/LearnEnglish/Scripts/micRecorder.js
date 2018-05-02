@@ -1,7 +1,7 @@
 ﻿var recordedBlob = {};
 var micRecorder = videojs("micRecorder", {
     controls: true,
-    width: 720,
+    width: 600,
     height: 300,
     fluid: false,
     plugins: {

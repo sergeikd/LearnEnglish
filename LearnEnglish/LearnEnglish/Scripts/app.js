@@ -1,54 +1,3 @@
-var recordedBlob = {};
-var micRecorder = videojs("micRecorder", {
-    controls: true,
-    width: 720,
-    height: 300,
-    fluid: false,
-    plugins: {
-        wavesurfer: {
-            src: "live",
-            waveColor: "#36393b",
-            progressColor: "#black",
-            debug: true,
-            cursorWidth: 1,
-            msDisplayMax: 10,
-            hideScrollbar: true
-        },
-        record: {
-            audio: true,
-            video: false,
-            maxLength: 10,
-            debug: true,
-            audioSampleRate: 22050,
-            audioChannels: 1
-        }
-    }
-}, function() {
-    // print version information at startup
-    videojs.log('Using video.js', videojs.VERSION,
-        'with videojs-record', videojs.getPluginVersion('record'),
-        '+ videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'),
-        'and recordrtc', RecordRTC.version);
-});
-// error handling
-micRecorder.on('deviceError', function() {
-    console.log('device error:', micRecorder.deviceErrorCode);
-});
-micRecorder.on('error', function(error) {
-    console.log('error:', error);
-});
-// user clicked the record button and started recording
-micRecorder.on('startRecord', function() {
-    console.log('started recording!');
-});
-// user completed recording and stream is available
-micRecorder.on('finishRecord', function() {
-    // the recordedBlob object contains the recorded data that
-    // can be downloaded by the user, stored on server etc.
-    recordedBlob = micRecorder.recordedData;
-    console.log('finished recording: ', recordedBlob);
-
-});
 var viewModel = {
     exerciseList: ko.observableArray([new Exercise()]),
     checkModel: ko.observable({})
@@ -62,6 +11,9 @@ function Exercise(id, fileArray, dateTime, isViewed, isChecked) {
     this.isChecked = isChecked;
     this.isViewed = isViewed;
 }
+
+var player;
+var recordedBlob;
 
 function savefile() {
     var data = new FormData();
@@ -84,7 +36,7 @@ function savefile() {
 
 function getTeacherData() {
     $.ajax({
-        url: "Student/Get",
+        url: "Student/GetList",
         type: "GET",
         contentType: false,
         processData: false,
@@ -102,15 +54,43 @@ function getTeacherData() {
 }
 
 function check(exercise) {
+    var url = "Student/GetAudio/" + exercise.id;
+    if (player) {
+        var bugs = document.getElementsByClassName("vjs-bug");
+        for (var i = 0; i < bugs.length; i++) {
+            bugs[i].innerHTML = "";
+        }
+        console.log(player);
+        player.wavesurfer().load(url);
+    }
+    else {
+        player = videojs("myPlayback", {
+            controls: true,
+            width: 600,
+            height: 300,
+            fluid: false,
+            plugins: {
+                wavesurfer: {
+                    src: url,
+                    msDisplayMax: 10,
+                    debug: true,
+                    waveColor: '#F2E68A',
+                    progressColor: 'black',
+                    cursorColor: 'black',
+                    hideScrollbar: true
+                }
+            }
+        }, function () {
+            videojs.log('Using video.js', videojs.VERSION,
+                'with videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'));
+        });
+    }
+    player.on('error', function (error) {
+        console.log('error:', error);
+    });
+
     viewModel.checkModel(exercise);
-    //viewModel.checkModel({
-    //    //id: exercise.id,
-    //    id: "111",
-    //    fileArray: exercise.fileArray,
-    //    dateTime: exercise.dateTime,
-    //    isChecked: exercise.isChecked,
-    //    isViewed: exercise.isViewed
-    //});
+
     $("#checkModal").modal("show");
     console.log(viewModel.checkModel());
 }
@@ -134,3 +114,16 @@ function savefile() {
         }
     });
 };
+
+function addBug() {
+    var time = Math.round(player.wavesurfer().getCurrentTime() * 100) / 100;
+    console.log("time = " + time);
+    player.bug({
+        height: 50,
+        imgSrc: 'http://cdn.teamcococdn.com/image/frame:1/teamcoco_twitter_128x128.png',
+        opacity: 0.5,
+        padding: '8px',
+        position: 'tl',
+        width: 50
+    });
+}

@@ -13,49 +13,47 @@
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane fade in active" id="home">
+                    <div role="tabpanel"  class="tab-pane fade in active" id="home">
                         <div class="row">
                             <div class="col-md-12">
-                                <audio id="micRecorder" class="video-js vjs-default-skin margin-top-75 center-block"></audio>
+                                <div id="micRecorder" class="video-js vjs-default-skin margin-top-75 center-block"></div>
                                 <button type="button" class="btn btn-default btn-lg margin-top-20 center-block" onclick="savefile()">Send To Teacher</button>
                             </div>
                         </div>
-                        <div id="waveform"></div>
-
-                        <p align="center">
-                            <button class="btn btn-primary" onclick="wavesurfer.playPause()">
-                                <i class="glyphicon glyphicon-play"></i>
-                                Play
-                            </button>
-                        </p>
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="teacher">
                         <table class="table table-striped">
                             <thead>
-                                <tr>
-                                    <th class="text-center">Date Time</th>
-                                    <th class="text-center">Checked</th>
-                                    <th class="text-center">Viewed</th>
-                                    <th class="text-center">To Check</th>
-                                </tr>
+                            <tr>
+                                <th class="text-center">Date Time</th>
+                                <th class="text-center">Checked</th>
+                                <th class="text-center">Viewed</th>
+                                <th class="text-center">To Check</th>
+                            </tr>
                             </thead>
                             <tbody data-bind="foreach: { data: exerciseList, as: 'exercise'}">
-                                <tr class="text-center">
-                                    <td>
-                                        <p data-bind="text: exercise.dateTime"></p>
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" disabled data-bind="checked: exercise.isChecked" />
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" disabled data-bind="checked: exercise.isViewed" />
-                                    </td>
-                                    <td>
-                                        <a href="#" data-bind="click: check.bind($data)">check</a>
-                                    </td>
-                                </tr>
+                            <tr class="text-center">
+                                <td>
+                                    <p data-bind="text: exercise.dateTime"></p>
+                                </td>
+                                <td>
+                                    <input type="checkbox" disabled data-bind="checked: exercise.isChecked" />
+                                </td>
+                                <td>
+                                    <input type="checkbox" disabled data-bind="checked: exercise.isViewed" />
+                                </td>
+                                <td>
+                                    <a href="#" data-bind="click: check.bind($data)">check</a>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
+                        @*<div>
+                            <audio id="myPlayback" class="video-js vjs-default-skin"></audio>
+                        </div>
+                        <button class="btn btn-primary" onclick="addBug()">
+                            Add Bug
+                        </button>*@
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="settings">
                         <b>Settings Content</b>
@@ -72,7 +70,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="checkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal" id="checkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -80,15 +78,13 @@
                 <h4 class="modal-title" id="myModalLabel">Modal title</h4>
             </div>
             <div class="modal-body">
-                <p data-bind="text: checkModel().id"></p>
-                @*<div id="waveform"></div>
+                <div>
+                    <audio id="myPlayback" class="video-js vjs-default-skin center-block" ></audio>
+                </div>
+                <button class="btn btn-primary" onclick="addBug()">
+                    Add Bug
+                </button>
 
-                <p align="center">
-                    <button class="btn btn-primary" onclick="wavesurfer.playPause()">
-                        <i class="glyphicon glyphicon-play"></i>
-                        Play
-                    </button>
-                </p>*@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

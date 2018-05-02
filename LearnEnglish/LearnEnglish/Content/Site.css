@@ -30,3 +30,7 @@ textarea {
 .margin-top-75 {
     margin-top: 75px;
 }
+
+#checkModal .modal-content {
+    min-width: 640px;
+}
