@@ -56,28 +56,29 @@ function getTeacherData() {
 function check(exercise) {
     var url = "Student/GetAudio/" + exercise.id;
     if (player) {
-        var bugs = document.getElementsByClassName("mark");
-        while (bugs.length > 0) {
-            bugs[0].remove();
-        }
+        clearMarks();
         player.wavesurfer().load(url);
     }
     else {
         player = videojs("myPlayback", {
             controls: true,
             width: 600,
-            height: 300,
+            height: 200,
             fluid: false,
             plugins: {
                 wavesurfer: {
                     src: url,
-                    msDisplayMax: 10,
+                    msDisplayMax: 1,
                     debug: true,
                     waveColor: "#36393b",
                     progressColor: "black",
                     cursorColor: 'black',
                     hideScrollbar: true
                 }
+            },
+            controlBar: {
+                // hide fullscreen control
+                fullscreenToggle: false
             }
         }, function () {
             videojs.log('Using video.js', videojs.VERSION,
@@ -153,4 +154,15 @@ function addBug(type) {
         width: 10 + "px",
         color: color
     });
+}
+
+function saveChecked() {
+
+}
+
+function clearMarks() {
+    var marks = document.getElementsByClassName("mark");
+    while (marks.length > 0) {
+        marks[0].remove();
+    }
 }

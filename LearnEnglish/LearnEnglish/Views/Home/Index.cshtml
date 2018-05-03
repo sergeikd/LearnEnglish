@@ -6,17 +6,17 @@
         <div class="card">
             <div class="body">
                 <!-- Nav tabs -->
-                <ul class="nav nav-tabs tab-nav-right" role="tablist">
+                <ul class="nav nav-tabs" role="tablist">
                     <li role="presentation" class="active"><a href="#home" data-toggle="tab">STUDENT</a></li>
                     <li role="presentation"><a href="#teacher" data-toggle="tab" onclick="getTeacherData()">TEACHER</a></li>
-                    <li role="presentation"><a href="#settings" data-toggle="tab">SETTINGS</a></li>
+                    <li role="presentation"><a href="#options" data-toggle="tab">OPTIONS</a></li>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
                     <div role="tabpanel"  class="tab-pane fade in active" id="home">
                         <div class="row">
                             <div class="col-md-12">
-                                <div id="micRecorder" class="video-js vjs-default-skin margin-top-75 center-block"></div>
+                                <div id="micRecorder" class="video-js margin-top-75 center-block"></div>
                                 <button type="button" class="btn btn-default btn-lg margin-top-20 center-block" onclick="savefile()">Send To Teacher</button>
                             </div>
                         </div>
@@ -48,14 +48,8 @@
                             </tr>
                             </tbody>
                         </table>
-                        @*<div>
-                            <audio id="myPlayback" class="video-js vjs-default-skin"></audio>
-                        </div>
-                        <button class="btn btn-primary" onclick="addBug()">
-                            Add Bug
-                        </button>*@
                     </div>
-                    <div role="tabpanel" class="tab-pane fade" id="settings">
+                    <div role="tabpanel" class="tab-pane fade" id="options">
                         <b>Settings Content</b>
                         <p>
                             Lorem ipsum dolor sit amet, ut duo atqui exerci dicunt, ius impedit mediocritatem an. Pri ut tation electram moderatius.
@@ -75,11 +69,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                <h4 class="modal-title" id="myModalLabel">Check</h4>
             </div>
             <div class="modal-body">
                 <div>
-                    <audio id="myPlayback" class="video-js vjs-default-skin center-block"></audio>
+                    <audio id="myPlayback" class="video-js center-block"></audio>
                 </div>
                 <div class="text-center margin-top-20">
                     <button type="button" class="btn btn-danger btn-lg" onclick="addBug(0)">Type 1</button>
@@ -89,7 +83,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default center-block" onclick="save()">Save</button>
+                <div class="text-center">
+                    <button type="button" class="btn btn-default" onclick="saveChecked()">Save</button>
+                    <button type="button" class="btn btn-default" onclick="clearMarks()">Clear</button>
+                </div>
             </div>
         </div>
     </div>

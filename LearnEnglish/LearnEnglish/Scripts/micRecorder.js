@@ -2,7 +2,7 @@
 var micRecorder = videojs("micRecorder", {
     controls: true,
     width: 600,
-    height: 300,
+    height: 200,
     fluid: false,
     plugins: {
         wavesurfer: {
@@ -22,6 +22,9 @@ var micRecorder = videojs("micRecorder", {
             audioSampleRate: 22050,
             audioChannels: 1
         }
+    },
+    controlBar: {
+        fullscreenToggle: false
     }
 }, function () {
     // print version information at startup
