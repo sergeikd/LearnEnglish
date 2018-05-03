@@ -8,19 +8,20 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using LearnEnglish.Models;
 using MongoDB.Bson;
+using Newtonsoft.Json;
 
 namespace LearnEnglish.Controllers
 {
-    public class StudentController : ApiController
+    public class AppController : ApiController
     {
         private readonly IMongoCollection<Exercise> _collection;
-        public StudentController()
+        public AppController()
         {
             const string connectionString = "mongodb://user:duplex@cluster0-shard-00-00-mn5ve.mongodb.net:27017,cluster0-shard-00-01-mn5ve.mongodb.net:27017,cluster0-shard-00-02-mn5ve.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin";
             _collection = new MongoClient(connectionString).GetDatabase("LearnEnglish").GetCollection<Exercise>("Exercise");
         }
         [HttpPost]
-        [Route("Student/Upload")]
+        [Route("App/Upload")]
         public async Task<IHttpActionResult> Upload()
         {
             var formData = await Request.Content.ReadAsMultipartAsync();
@@ -30,7 +31,8 @@ namespace LearnEnglish.Controllers
                 var exercise = new Exercise
                 {
                     FileArray = await content.ReadAsByteArrayAsync(),
-                    DateTime = DateTime.Now
+                    DateTime = DateTime.Now,
+                    MarkArray = new Mark[0]
                 };
                 await _collection.InsertOneAsync(exercise);
             }
@@ -38,7 +40,7 @@ namespace LearnEnglish.Controllers
         }
 
         [HttpGet]
-        [Route("Student/GetList")]
+        [Route("App/GetList")]
         public async Task<IHttpActionResult> GetList()
         {
             var projection = Builders<Exercise>.Projection.Expression(p => new Exercise
@@ -47,14 +49,15 @@ namespace LearnEnglish.Controllers
                 DateTime = p.DateTime,
                 Comment = p.Comment,
                 IsChecked = p.IsChecked,
-                IsViewed = p.IsViewed
+                IsViewed = p.IsViewed,
+                MarkArray = p.MarkArray
             } );
             var exerciseList = await _collection.Find(new BsonDocument()).Project(projection).ToListAsync();
             return Ok(exerciseList);
         }
 
         [HttpGet]
-        [Route("Student/GetAudio/{id}")]
+        [Route("App/GetAudio/{id}")]
         public async Task<HttpResponseMessage> GetAudio(string id)
         {
             var exercise = await _collection.Find(new BsonDocument("_id", new ObjectId(id))).SingleOrDefaultAsync();
@@ -66,6 +69,17 @@ namespace LearnEnglish.Controllers
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") {FileName = $"{id}.webm"};
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("audio/webm");
             return response;
+        }
+
+        [HttpPost]
+        [Route("App/Save")]
+        public async Task<IHttpActionResult> Save()
+        {
+            var data = JsonConvert.DeserializeObject<Exercise>(await Request.Content.ReadAsStringAsync());
+            var filter = Builders<Exercise>.Filter.Eq("_id", new ObjectId(data.Id));
+            var update = Builders<Exercise>.Update.Set(x => x.MarkArray, data.MarkArray);
+            var result = await _collection.UpdateOneAsync(filter, update);
+            return Ok(result.ModifiedCount);
         }
     }
 }

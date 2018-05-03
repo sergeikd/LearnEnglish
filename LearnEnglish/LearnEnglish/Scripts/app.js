@@ -1,15 +1,20 @@
+//$(document).ready(function () {
+//    $('#success-alert').hide();
+//});
+
 var viewModel = {
     exerciseList: ko.observableArray([new Exercise()]),
     checkModel: ko.observable({})
 };
 ko.applyBindings(viewModel);
 
-function Exercise(id, fileArray, dateTime, isViewed, isChecked) {
-    this.id = id;
-    this.fileArray = fileArray;
-    this.dateTime = dateTime;
-    this.isChecked = isChecked;
-    this.isViewed = isViewed;
+function Exercise(id, fileArray, dateTime, isViewed, isChecked, markArray ) {
+    this.Id = id;
+    this.FileArray = fileArray;
+    this.DateTime = dateTime;
+    this.IsChecked = isChecked;
+    this.IsViewed = isViewed;
+    this.MarkArray = markArray;
 }
 
 var player;
@@ -20,7 +25,7 @@ function savefile() {
     data.append("file", recordedBlob);
 
     $.ajax({
-        url: "Student/Upload",
+        url: "App/Upload",
         type: "POST",
         data: data,
         contentType: false,
@@ -36,7 +41,7 @@ function savefile() {
 
 function getTeacherData() {
     $.ajax({
-        url: "Student/GetList",
+        url: "App/GetList",
         type: "GET",
         contentType: false,
         processData: false,
@@ -44,7 +49,13 @@ function getTeacherData() {
             console.log(data);
             viewModel.exerciseList.removeAll();
             for (var i = 0; i < data.length; i++) {
-                viewModel.exerciseList.push(new Exercise(data[i].Id, data[i].FileArray, data[i].DateTime, data[i].IsChecked, data[i].IsViewed));
+                viewModel.exerciseList.push(new Exercise(
+                    data[i].Id,
+                    data[i].FileArray,
+                    data[i].DateTime,
+                    data[i].IsChecked,
+                    data[i].IsViewed,
+                    data[i].MarkArray));
             }
         },
         error: function () {
@@ -54,7 +65,9 @@ function getTeacherData() {
 }
 
 function check(exercise) {
-    var url = "Student/GetAudio/" + exercise.id;
+    $('#success-msg').hide();
+    $('#danger-msg').hide();
+    var url = "App/GetAudio/" + exercise.Id;
     if (player) {
         clearMarks();
         player.wavesurfer().load(url);
@@ -77,7 +90,6 @@ function check(exercise) {
                 }
             },
             controlBar: {
-                // hide fullscreen control
                 fullscreenToggle: false
             }
         }, function () {
@@ -101,7 +113,7 @@ function savefile() {
     data.append('file', recordedBlob);
 
     $.ajax({
-        url: "Student/Upload",
+        url: "App/Upload",
         type: 'POST',
         data: data,
         contentType: false,
@@ -113,7 +125,7 @@ function savefile() {
             console.log("failed");
         }
     });
-};
+}
 
 function addBug(type) {
     var time = Math.round(player.wavesurfer().getCurrentTime() * 100) / 100;
@@ -121,9 +133,9 @@ function addBug(type) {
     if (time < 0) {
         time = 0;
     }
+    viewModel.checkModel().MarkArray.push({ Time: time, Type: type});
     var duration = Math.round(player.wavesurfer().getDuration() * 100) / 100;
-    console.log("time = " + time + " duration = " + duration);
-    //var canvas = document.getElementsByTagName("canvas");
+
     var canvas = $("#myPlayback canvas")[0];
     var height = canvas.clientHeight;
     var width = canvas.clientWidth;
@@ -157,10 +169,32 @@ function addBug(type) {
 }
 
 function saveChecked() {
-
+    var data = JSON.stringify(viewModel.checkModel());
+    //var data = new FormData();
+    //data.append('exercise', viewModel.checkModel().id);
+    $.ajax({
+        url: "App/Save",
+        type: "POST",
+        data: data, 
+        contentType: "application/json",
+        processData: false,
+        success: function (data) {
+            $("#success-msg").show();
+            window.setTimeout(function () {
+                $("#success-msg").hide();
+            }, 3000);
+        },
+        error: function () {
+            $("#danger-msg").show();
+            window.setTimeout(function () {
+                $("#danger-msg").hide();
+            }, 3000);
+        }
+    });
 }
 
 function clearMarks() {
+    viewModel.checkModel().MarkArray.length = 0;
     var marks = document.getElementsByClassName("mark");
     while (marks.length > 0) {
         marks[0].remove();
