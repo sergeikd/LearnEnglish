@@ -50,5 +50,4 @@ micRecorder.on('finishRecord', function () {
     // can be downloaded by the user, stored on server etc.
     recordedBlob = micRecorder.recordedData;
     console.log('finished recording: ', recordedBlob);
-
 });

@@ -42,7 +42,7 @@ input, select
     margin: 0;
 }
 
-#checkModal .modal-content {
+.modal-content {
     min-width: 640px;
 }
 

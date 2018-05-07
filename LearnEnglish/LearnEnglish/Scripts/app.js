@@ -1,11 +1,14 @@
 var player;
 var recordedBlob;
+var checkModel = {};
 var viewModel = {
     exerciseList: ko.observableArray([]),
-    checkModel: ko.observable({}),
+    //checkModel: ko.observable({}),
     comment: ko.observable()
 };
 ko.applyBindings(viewModel);
+
+window.onload = getList();
 
 function savefile() {
     //micRecorder.record().saveAs({ 'audio': 'fileFront.webm' });
@@ -26,7 +29,7 @@ function savefile() {
     });
 }
 
-function getTeacherData() {
+function getList() {
     $.ajax({
         url: "App/GetList",
         type: "GET",
@@ -53,7 +56,7 @@ function getTeacherData() {
     });
 }
 
-function check(exercise) {
+function showModal(role, exercise) {
     var url = "App/GetAudio/" + exercise.Id;
     if (player) {
         clearMarks();
@@ -90,7 +93,8 @@ function check(exercise) {
 
     checkModel = $.extend(true, {}, exercise);
     viewModel.comment(checkModel.Comment);
-    $("#checkModal").modal("show");
+    $("#myModal").modal("show");
+    setModal(role);
     player.on("waveReady", function () {
         var canvas = $("#myPlayback canvas")[0];
         var height = canvas.clientHeight;
@@ -107,7 +111,61 @@ function check(exercise) {
             });
         }
     });
-    console.log("after check action:", viewModel.comment());
+}
+
+function createRecord() {
+    var micRecorder = videojs("micRecorder", {
+        controls: true,
+        width: 600,
+        height: 200,
+        fluid: false,
+        plugins: {
+            wavesurfer: {
+                src: "live",
+                waveColor: "#36393b",
+                progressColor: "#black",
+                debug: true,
+                cursorWidth: 1,
+                msDisplayMax: 10,
+                hideScrollbar: true
+            },
+            record: {
+                audio: true,
+                video: false,
+                maxLength: 10,
+                debug: true,
+                audioSampleRate: 22050,
+                audioChannels: 1
+            }
+        },
+        controlBar: {
+            fullscreenToggle: false
+        }
+    }, function () {
+        // print version information at startup
+        videojs.log('Using video.js', videojs.VERSION,
+            'with videojs-record', videojs.getPluginVersion('record'),
+            '+ videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'),
+            'and recordrtc', RecordRTC.version);
+    });
+    // error handling
+    micRecorder.on('deviceError', function () {
+        console.log('device error:', micRecorder.deviceErrorCode);
+    });
+    micRecorder.on('error', function (error) {
+        console.log('error:', error);
+    });
+    // user clicked the record button and started recording
+    micRecorder.on('startRecord', function () {
+        console.log('started recording!');
+    });
+    // user completed recording and stream is available
+    micRecorder.on('finishRecord', function () {
+        // the recordedBlob object contains the recorded data that
+        // can be downloaded by the user, stored on server etc.
+        recordedBlob = micRecorder.recordedData;
+        console.log('finished recording: ', recordedBlob);
+    });
 }
 
 function addBug(type) {
@@ -141,7 +199,7 @@ function saveChecked() {
         contentType: "application/json",
         processData: false,
         success: function (data) {
-            getTeacherData();
+            getList();
             showNotification("alert-success", "Success!", "top", "center", "", "", 2000);
         },
         error: function () {
@@ -172,5 +230,23 @@ function getColor(type) {
         return "blue";
     default:
         return "gray";
+    }
+}
+
+function setModal(role) {
+    switch (role) {
+    case "teacher":
+        $("#mistakeButtons").show();
+        $("#teacherComment").show();
+        $("#studentComment").hide();
+        $("#actionButtons").show();
+        break;
+    case "student":
+        $("#myModal").modal("show");
+        $("#mistakeButtons").hide();
+        $("#teacherComment").hide();
+        $("#studentComment").show();
+        $("#actionButtons").hide();
+        break;
     }
 }
