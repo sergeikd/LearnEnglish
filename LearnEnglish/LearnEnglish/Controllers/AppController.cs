@@ -77,7 +77,7 @@ namespace LearnEnglish.Controllers
         {
             var data = JsonConvert.DeserializeObject<Exercise>(await Request.Content.ReadAsStringAsync());
             var filter = Builders<Exercise>.Filter.Eq("_id", new ObjectId(data.Id));
-            var update = Builders<Exercise>.Update.Set(x => x.MarkArray, data.MarkArray);
+            var update = Builders<Exercise>.Update.Set(x => x.MarkArray, data.MarkArray).Set(x => x.Comment, data.Comment).Set(x => x.IsChecked, true);
             var result = await _collection.UpdateOneAsync(filter, update);
             return Ok(result.ModifiedCount);
         }

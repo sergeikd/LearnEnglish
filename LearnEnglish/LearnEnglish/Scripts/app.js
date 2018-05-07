@@ -1,29 +1,16 @@
-//$(document).ready(function () {
-//    $('#success-alert').hide();
-//});
-
+var player;
+var recordedBlob;
 var viewModel = {
-    exerciseList: ko.observableArray([new Exercise()]),
-    checkModel: ko.observable({})
+    exerciseList: ko.observableArray([]),
+    checkModel: ko.observable({}),
+    comment: ko.observable()
 };
 ko.applyBindings(viewModel);
 
-function Exercise(id, fileArray, dateTime, isViewed, isChecked, markArray ) {
-    this.Id = id;
-    this.FileArray = fileArray;
-    this.DateTime = dateTime;
-    this.IsChecked = isChecked;
-    this.IsViewed = isViewed;
-    this.MarkArray = markArray;
-}
-
-var player;
-var recordedBlob;
-
 function savefile() {
+    //micRecorder.record().saveAs({ 'audio': 'fileFront.webm' });
     var data = new FormData();
     data.append("file", recordedBlob);
-
     $.ajax({
         url: "App/Upload",
         type: "POST",
@@ -31,10 +18,10 @@ function savefile() {
         contentType: false,
         processData: false,
         success: function (data) {
-            alert("id = " + data);
+            showNotification("alert-success", "Success!", "top", "center", "" , "" , 2000);
         },
         error: function () {
-            alert("failed");
+            showNotification("alert-danger", "Failed!", "top", "center", "" , "" , 2000);
         }
     });
 }
@@ -49,24 +36,24 @@ function getTeacherData() {
             console.log(data);
             viewModel.exerciseList.removeAll();
             for (var i = 0; i < data.length; i++) {
-                viewModel.exerciseList.push(new Exercise(
-                    data[i].Id,
-                    data[i].FileArray,
-                    data[i].DateTime,
-                    data[i].IsChecked,
-                    data[i].IsViewed,
-                    data[i].MarkArray));
+                viewModel.exerciseList.push({
+                    Id: data[i].Id,
+                    FileArray: data[i].FileArray,
+                    DateTime: data[i].DateTime,
+                    IsChecked: data[i].IsChecked,
+                    IsViewed: data[i].IsViewed,
+                    MarkArray: data[i].MarkArray,
+                    Comment: data[i].Comment
+                });
             }
         },
         error: function () {
-            alert("failed");
+            showNotification("alert-danger", "Failed!", "top", "center", "" , "" , 2000);
         }
     });
 }
 
 function check(exercise) {
-    $('#success-msg').hide();
-    $('#danger-msg').hide();
     var url = "App/GetAudio/" + exercise.Id;
     if (player) {
         clearMarks();
@@ -101,30 +88,26 @@ function check(exercise) {
         console.log('error:', error);
     });
 
-    viewModel.checkModel(exercise);
-
+    checkModel = $.extend(true, {}, exercise);
+    viewModel.comment(checkModel.Comment);
     $("#checkModal").modal("show");
-    console.log(viewModel.checkModel());
-}
-
-function savefile() {
-    //micRecorder.record().saveAs({ 'audio': 'fileFront.webm' });
-    var data = new FormData();
-    data.append('file', recordedBlob);
-
-    $.ajax({
-        url: "App/Upload",
-        type: 'POST',
-        data: data,
-        contentType: false,
-        processData: false,
-        success: function () {
-            console.log("saved successfully");
-        },
-        error: function () {
-            console.log("failed");
+    player.on("waveReady", function () {
+        var canvas = $("#myPlayback canvas")[0];
+        var height = canvas.clientHeight;
+        var width = canvas.clientWidth;
+        var duration = Math.round(player.wavesurfer().getDuration() * 100) / 100;
+        for (var i = 0; i < checkModel.MarkArray.length; i++) {
+            var position = width / duration * checkModel.MarkArray[i].Time;
+            player.bug({
+                height: height + 'px',
+                opacity: 0.5,
+                padding: position + 'px',
+                width: 10 + "px",
+                color: getColor(checkModel.MarkArray[i].Type)
+            });
         }
     });
+    console.log("after check action:", viewModel.comment());
 }
 
 function addBug(type) {
@@ -133,45 +116,24 @@ function addBug(type) {
     if (time < 0) {
         time = 0;
     }
-    viewModel.checkModel().MarkArray.push({ Time: time, Type: type});
+    checkModel.MarkArray.push({ Time: time, Type: type});
     var duration = Math.round(player.wavesurfer().getDuration() * 100) / 100;
-
     var canvas = $("#myPlayback canvas")[0];
     var height = canvas.clientHeight;
     var width = canvas.clientWidth;
     var position = width / duration * time;
-    var color;
-    switch  (type)
-    {
-        case 0:
-            color = "red";
-            break;
-        case 1:
-            color = "yellow";
-            break;
-        case 2:
-            color = "green";
-            break;
-        case 3:
-            color = "blue";
-            break;
-        default:
-            color = "gray";
-    }
     player.bug({
         height: height + 'px',
-        imgSrc: 'http://cdn.teamcococdn.com/image/frame:1/teamcoco_twitter_128x128.png',
         opacity: 0.5,
         padding: position + 'px',
         width: 10 + "px",
-        color: color
+        color: getColor(type)
     });
 }
 
 function saveChecked() {
-    var data = JSON.stringify(viewModel.checkModel());
-    //var data = new FormData();
-    //data.append('exercise', viewModel.checkModel().id);
+    checkModel.Comment = viewModel.comment();
+    var data = JSON.stringify(checkModel);
     $.ajax({
         url: "App/Save",
         type: "POST",
@@ -179,24 +141,36 @@ function saveChecked() {
         contentType: "application/json",
         processData: false,
         success: function (data) {
-            $("#success-msg").show();
-            window.setTimeout(function () {
-                $("#success-msg").hide();
-            }, 3000);
+            getTeacherData();
+            showNotification("alert-success", "Success!", "top", "center", "", "", 2000);
         },
         error: function () {
-            $("#danger-msg").show();
-            window.setTimeout(function () {
-                $("#danger-msg").hide();
-            }, 3000);
+            showNotification("alert-danger", "Failed!", "top", "center", "" , "" , 2000);
         }
     });
+    console.log("To save", viewModel.exerciseList(), checkModel.Id);
 }
 
 function clearMarks() {
-    viewModel.checkModel().MarkArray.length = 0;
+    checkModel.MarkArray.length = 0;
+    viewModel.comment(null);
     var marks = document.getElementsByClassName("mark");
     while (marks.length > 0) {
         marks[0].remove();
+    }
+}
+
+function getColor(type) {
+    switch (type) {
+    case 0:
+        return "red";
+    case 1:
+        return "yellow";
+    case 2:
+        return "green";
+    case 3:
+        return "blue";
+    default:
+        return "gray";
     }
 }

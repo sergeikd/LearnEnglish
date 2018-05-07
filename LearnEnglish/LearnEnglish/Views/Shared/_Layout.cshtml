@@ -18,20 +18,9 @@
     <script src="~/Scripts/lib/videojs.wavesurfer.min.js"></script>
     <script src="~/Scripts/lib/videojs.record.min.js"></script>
     <script src="~/Scripts/lib/videojs-bug.js"></script>
+    <script src="~/Scripts/bootstrap-notify.min.js"></script>
+    <script src="~/Scripts/notifications.js"></script>
 
-    <style>
-        body {
-            font-weight: 300;
-        }
-
-        select {
-            margin: 0 0 0.5em 0;
-        }
-
-        .outputSelector {
-            margin-top: 30px;
-        }
-    </style>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
@@ -65,7 +54,7 @@
     <script src="~/Scripts/micRecorder.js"></script>
     @*<script src="~/Scripts/player.js"></script>*@
     <script src="~/Scripts/app.js"></script>
-    @Scripts.Render("~/bundles/jquery")
+    @*@Scripts.Render("~/bundles/jquery")*@
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>

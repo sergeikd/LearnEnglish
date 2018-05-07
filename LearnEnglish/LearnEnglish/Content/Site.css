@@ -1,6 +1,14 @@
-﻿.body {
+﻿select {
+    margin: 0 0 0.5em 0;
+}
+
+.outputSelector {
+    margin-top: 30px;
+}
+.body {
     padding-top: 50px;
     padding-bottom: 20px;
+    font-weight: 300;
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -17,9 +25,8 @@
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
+input, select
+{
     max-width: 280px;
 }
 
@@ -47,4 +54,9 @@ textarea {
 
 #micRecorder, #myPlayback {
     background-color: #EEE;
+}
+
+.bootstrap-notify-container {
+    max-width: 320px;
+    text-align: center;
 }

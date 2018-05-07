@@ -13,7 +13,7 @@
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    <div role="tabpanel"  class="tab-pane fade in active" id="home">
+                    <div role="tabpanel" class="tab-pane fade in active" id="home">
                         <div class="row">
                             <div class="col-md-12">
                                 <div id="micRecorder" class="video-js margin-top-75 center-block"></div>
@@ -24,28 +24,28 @@
                     <div role="tabpanel" class="tab-pane fade" id="teacher">
                         <table class="table table-striped">
                             <thead>
-                            <tr>
-                                <th class="text-center">Date Time</th>
-                                <th class="text-center">Checked</th>
-                                <th class="text-center">Viewed</th>
-                                <th class="text-center">To Check</th>
-                            </tr>
+                                <tr>
+                                    <th class="text-center">Date Time</th>
+                                    <th class="text-center">Checked</th>
+                                    <th class="text-center">Viewed</th>
+                                    <th class="text-center">To Check</th>
+                                </tr>
                             </thead>
                             <tbody data-bind="foreach: { data: exerciseList, as: 'exercise'}">
-                            <tr class="text-center">
-                                <td>
-                                    <p data-bind="text: exercise.DateTime"></p>
-                                </td>
-                                <td>
-                                    <input type="checkbox" disabled data-bind="checked: exercise.IsChecked" />
-                                </td>
-                                <td>
-                                    <input type="checkbox" disabled data-bind="checked: exercise.IsViewed" />
-                                </td>
-                                <td>
-                                    <a href="#" data-bind="click: check.bind($data)">check</a>
-                                </td>
-                            </tr>
+                                <tr class="text-center">
+                                    <td>
+                                        <p data-bind="text: exercise.DateTime"></p>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" disabled data-bind="checked: exercise.IsChecked" />
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" disabled data-bind="checked: exercise.IsViewed" />
+                                    </td>
+                                    <td>
+                                        <a href="#" data-bind="click: check.bind($data)">check</a>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -69,10 +69,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <div class="text-center">
-                    <h4 class="margin-0"><span class="label label-success" id="success-msg">Success!</span></h4>
-                    <h4 class="margin-0"><span class="label label-danger" id="danger-msg">Failed!</span></h4>
-                </div>
+                <h4 class="modal-title">Check</h4>
             </div>
             <div class="modal-body">
                 <div>
@@ -84,14 +81,17 @@
                     <button type="button" class="btn btn-success btn-lg" onclick="addBug(2)">Type 3</button>
                     <button type="button" class="btn btn-primary btn-lg" onclick="addBug(3)">Type 4</button>
                 </div>
+                <label>Comment:</label>
+                <textarea class="form-control" rows="3" data-bind="value: comment"></textarea>
             </div>
             <div class="modal-footer">
                 <div class="text-center">
                     <button type="button" class="btn btn-default" onclick="saveChecked()">Save</button>
                     <button type="button" class="btn btn-default" onclick="clearMarks()">Clear</button>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
-
+<span data-bind="text: comment"></span>
