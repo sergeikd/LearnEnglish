@@ -3,7 +3,6 @@ var recordedBlob;
 var checkModel = {};
 var viewModel = {
     exerciseList: ko.observableArray([]),
-    //checkModel: ko.observable({}),
     comment: ko.observable()
 };
 ko.applyBindings(viewModel);
@@ -11,7 +10,6 @@ ko.applyBindings(viewModel);
 window.onload = getList();
 
 function savefile() {
-    //micRecorder.record().saveAs({ 'audio': 'fileFront.webm' });
     var data = new FormData();
     data.append("file", recordedBlob);
     $.ajax({
@@ -21,6 +19,7 @@ function savefile() {
         contentType: false,
         processData: false,
         success: function (data) {
+            getList();
             showNotification("alert-success", "Success!", "top", "center", "" , "" , 2000);
         },
         error: function () {

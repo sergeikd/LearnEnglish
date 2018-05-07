@@ -1,137 +1,172 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    Layout = null;
 }
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="body">
-                <!-- Nav tabs -->
-                <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#home" data-toggle="tab" onclick="getList()">STUDENT</a></li>
-                    <li role="presentation"><a href="#teacher" data-toggle="tab" onclick="getList()">TEACHER</a></li>
-                    <li role="presentation"><a href="#options" data-toggle="tab">OPTIONS</a></li>
-                </ul>
-                <!-- Tab panes -->
-                <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane fade in active" id="home">
-                        <div class="row">
-                            <div class="col-md-12">
-                                @*<div id="micRecorder" class="video-js center-block"></div>*@
-                                <button type="button" class="btn btn-default margin-top-20" data-toggle="modal" data-target="#recordModal" onclick="createRecord()">Create New Record</button>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Learn English</title>
+    <link href="~/Content/video-js.min.css" rel="stylesheet">
+    <link href="~/Content/videojs.record.min.css" rel="stylesheet">
+    <link href="~/Content/videojs-bug.css" rel="stylesheet">
+
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/knockout-3.4.2.js"></script>
+    <script src="~/Scripts/lib/video.min.js"></script>
+    <script src="~/Scripts/lib/RecordRTC.js"></script>
+    <script src="~/Scripts/lib/adapter-latest.js"></script>
+    <script src="~/Scripts/lib/wavesurfer.min.js"></script>
+    <script src="~/Scripts/lib/wavesurfer.microphone.min.js"></script>
+    <script src="~/Scripts/lib/videojs.wavesurfer.min.js"></script>
+    <script src="~/Scripts/lib/videojs.record.min.js"></script>
+    <script src="~/Scripts/lib/videojs-bug.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/bootstrap-notify.min.js"></script>
+    <script src="~/Scripts/notifications.js"></script>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="container body-content">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#home" data-toggle="tab" onclick="getList()">STUDENT</a></li>
+                            <li role="presentation"><a href="#teacher" data-toggle="tab" onclick="getList()">TEACHER</a></li>
+                            <li role="presentation"><a href="#options" data-toggle="tab">OPTIONS</a></li>
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane fade in active" id="home">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        @*<div id="micRecorder" class="video-js center-block"></div>*@
+                                        <button type="button" class="btn btn-default margin-top-20" data-toggle="modal" data-target="#recordModal" onclick="createRecord()">Create New Record</button>
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">Date Time</th>
+                                                    <th class="text-center">Checked</th>
+                                                    <th class="text-center">Viewed</th>
+                                                    <th class="text-center">To View</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-bind="foreach: { data: exerciseList, as: 'exercise'}">
+                                                <tr class="text-center">
+                                                    <td>
+                                                        <p data-bind="text: exercise.DateTime"></p>
+                                                    </td>
+                                                    <td>
+                                                        <input type="checkbox" disabled data-bind="checked: exercise.IsChecked" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="checkbox" disabled data-bind="checked: exercise.IsViewed" />
+                                                    </td>
+                                                    <td>
+                                                        <a href="#" data-bind="click: showModal.bind($data, 'student')">view</a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="teacher">
                                 <table class="table table-striped">
                                     <thead>
-                                    <tr>
-                                        <th class="text-center">Date Time</th>
-                                        <th class="text-center">Checked</th>
-                                        <th class="text-center">Viewed</th>
-                                        <th class="text-center">To View</th>
-                                    </tr>
+                                        <tr>
+                                            <th class="text-center">Date Time</th>
+                                            <th class="text-center">Checked</th>
+                                            <th class="text-center">Viewed</th>
+                                            <th class="text-center">To Check</th>
+                                        </tr>
                                     </thead>
                                     <tbody data-bind="foreach: { data: exerciseList, as: 'exercise'}">
-                                    <tr class="text-center">
-                                        <td>
-                                            <p data-bind="text: exercise.DateTime"></p>
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" disabled data-bind="checked: exercise.IsChecked" />
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" disabled data-bind="checked: exercise.IsViewed" />
-                                        </td>
-                                        <td>
-                                            <a href="#" data-bind="click: showModal.bind($data, 'student')">view</a>
-                                        </td>
-                                    </tr>
+                                        <tr class="text-center">
+                                            <td>
+                                                <p data-bind="text: exercise.DateTime"></p>
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" disabled data-bind="checked: exercise.IsChecked" />
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" disabled data-bind="checked: exercise.IsViewed" />
+                                            </td>
+                                            <td>
+                                                <a href="#" data-bind="click: showModal.bind($data, 'teacher')">check</a>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
+                            <div role="tabpanel" class="tab-pane fade" id="options">
+                                <b>Settings Content</b>
+                                <p>
+                                    Lorem ipsum dolor sit amet, ut duo atqui exerci dicunt, ius impedit mediocritatem an. Pri ut tation electram moderatius.
+                                    Per te suavitate democritum. Duis nemore probatus ne quo, ad liber essent aliquid
+                                    pro. Et eos nusquam accumsan, vide mentitum fabellas ne est, eu munere gubergren
+                                    sadipscing mel.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane fade" id="teacher">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">Date Time</th>
-                                    <th class="text-center">Checked</th>
-                                    <th class="text-center">Viewed</th>
-                                    <th class="text-center">To Check</th>
-                                </tr>
-                            </thead>
-                            <tbody data-bind="foreach: { data: exerciseList, as: 'exercise'}">
-                                <tr class="text-center">
-                                    <td>
-                                        <p data-bind="text: exercise.DateTime"></p>
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" disabled data-bind="checked: exercise.IsChecked" />
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" disabled data-bind="checked: exercise.IsViewed" />
-                                    </td>
-                                    <td>
-                                        <a href="#" data-bind="click: showModal.bind($data, 'teacher')">check</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="recordModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">New Record</h4>
                     </div>
-                    <div role="tabpanel" class="tab-pane fade" id="options">
-                        <b>Settings Content</b>
-                        <p>
-                            Lorem ipsum dolor sit amet, ut duo atqui exerci dicunt, ius impedit mediocritatem an. Pri ut tation electram moderatius.
-                            Per te suavitate democritum. Duis nemore probatus ne quo, ad liber essent aliquid
-                            pro. Et eos nusquam accumsan, vide mentitum fabellas ne est, eu munere gubergren
-                            sadipscing mel.
-                        </p>
+                    <div class="modal-body">
+                        <div id="micRecorder" class="video-js center-block"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default center-block" onclick="savefile()">Send To Teacher</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="modal" id="recordModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">New Record</h4>
-            </div>
-            <div class="modal-body">
-                <div id="micRecorder" class="video-js center-block"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default center-block" onclick="savefile()">Send To Teacher</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Check</h4>
-            </div>
-            <div class="modal-body">
-                <div>
-                    <audio id="myPlayback" class="video-js center-block"></audio>
-                </div>
-                <div class="text-center margin-top-20" id="mistakeButtons">
-                    <button type="button" class="btn btn-danger btn-lg" onclick="addBug(0)">Type 1</button>
-                    <button type="button" class="btn btn-warning btn-lg" onclick="addBug(1)">Type 2</button>
-                    <button type="button" class="btn btn-success btn-lg" onclick="addBug(2)">Type 3</button>
-                    <button type="button" class="btn btn-primary btn-lg" onclick="addBug(3)">Type 4</button>
-                </div>
-                <label>Comment:</label>
-                <textarea id="teacherComment" class="form-control" rows="3" data-bind="value: comment"></textarea>
-                <a id="studentComment" class="form-control" rows="3" data-bind="value: comment"></a>
-                </div>
-            <div class="modal-footer">
-                <div class="text-center" id="actionButtons">
-                    <button type="button" class="btn btn-default" onclick="saveChecked()">Save</button>
-                    <button type="button" class="btn btn-default" onclick="clearMarks()">Clear</button>
+        <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Check</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <audio id="myPlayback" class="video-js center-block"></audio>
+                        </div>
+                        <div class="text-center margin-top-20" id="mistakeButtons">
+                            <button type="button" class="btn btn-danger btn-lg" onclick="addBug(0)">Type 1</button>
+                            <button type="button" class="btn btn-warning btn-lg" onclick="addBug(1)">Type 2</button>
+                            <button type="button" class="btn btn-success btn-lg" onclick="addBug(2)">Type 3</button>
+                            <button type="button" class="btn btn-primary btn-lg" onclick="addBug(3)">Type 4</button>
+                        </div>
+                        <label>Comment:</label>
+                        <textarea id="teacherComment" class="form-control" rows="3" data-bind="value: comment"></textarea>
+                        <a id="studentComment" class="form-control" rows="3" data-bind="value: comment"></a>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center" id="actionButtons">
+                            <button type="button" class="btn btn-default" onclick="saveChecked()">Save</button>
+                            <button type="button" class="btn btn-default" onclick="clearMarks()">Clear</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+<script src="~/Scripts/app.js"></script>
+
+</body>
+</html>

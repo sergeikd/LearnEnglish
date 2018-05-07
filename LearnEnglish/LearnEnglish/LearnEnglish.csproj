@@ -167,6 +167,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\site.css" />
+    <None Include="Properties\PublishProfiles\learnenglish - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\learnenglish - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\bootstrap-notify.min.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
@@ -186,10 +188,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <None Include="Properties\PublishProfiles\learnenglish - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\learnenglish - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\micrecording - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\micrecording - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
