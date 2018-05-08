@@ -19,5 +19,14 @@ namespace LearnEnglish
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        protected void Application_BeginRequest(Object sender, EventArgs e)
+        {
+            var httpRequest = HttpContext.Current.Request;
+            if (httpRequest.IsSecureConnection.Equals(false) && httpRequest.IsLocal.Equals(false))
+            {
+                Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"] + httpRequest.RawUrl);
+            }
+        }
     }
 }

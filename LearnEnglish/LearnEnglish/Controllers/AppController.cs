@@ -81,5 +81,23 @@ namespace LearnEnglish.Controllers
             var result = await _collection.UpdateOneAsync(filter, update);
             return Ok(result.ModifiedCount);
         }
+
+        [HttpPost]
+        [Route("App/View")]
+        public async Task<IHttpActionResult> View([FromBody] string id)
+        {
+            var filter = Builders<Exercise>.Filter.Eq("_id", new ObjectId(id));
+            var update = Builders<Exercise>.Update.Set(x => x.IsViewed, true);
+            var result = await _collection.UpdateOneAsync(filter, update);
+            return Ok(result.ModifiedCount);
+        }
+
+        [HttpGet]
+        [Route("App/Remove")]
+        public async Task<IHttpActionResult> Remove()
+        {
+            var result = await _collection.DeleteManyAsync(x => x.IsViewed && x.IsChecked);
+            return Ok(result.DeletedCount);
+        }
     }
 }

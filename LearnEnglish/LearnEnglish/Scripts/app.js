@@ -56,6 +56,23 @@ function getList() {
 }
 
 function showModal(role, exercise) {
+    if (role === "student" && exercise.IsChecked && !exercise.IsViewed) {
+        $.ajax({
+            url: "App/View",
+            type: "POST",
+            data: JSON.stringify(exercise.Id),
+            contentType: "application/json",
+            processData: false,
+            success: function () {
+                getList();
+                console.log("Viewed status updated succesfully");
+            },
+            error: function () {
+                showNotification("alert-danger", "Failed!", "top", "center", "", "", 2000);
+                return;
+            }
+        });
+    }
     var url = "App/GetAudio/" + exercise.Id;
     if (player) {
         clearMarks();
@@ -205,7 +222,6 @@ function saveChecked() {
             showNotification("alert-danger", "Failed!", "top", "center", "" , "" , 2000);
         }
     });
-    console.log("To save", viewModel.exerciseList(), checkModel.Id);
 }
 
 function clearMarks() {
@@ -215,6 +231,24 @@ function clearMarks() {
     while (marks.length > 0) {
         marks[0].remove();
     }
+}
+
+function remove() {
+    $.ajax({
+        url: "App/Remove",
+        type: "Get",
+        data: null,
+        contentType: false,
+        processData: false,
+        success: function () {
+            getList();
+            console.log("Viewed status updated succesfully");
+        },
+        error: function () {
+            showNotification("alert-danger", "Failed!", "top", "center", "", "", 2000);
+            return;
+        }
+    });
 }
 
 function getColor(type) {
