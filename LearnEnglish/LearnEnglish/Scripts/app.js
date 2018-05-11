@@ -1,8 +1,9 @@
 var player;
 var recordedBlob;
-var checkModel = {};
+//var checkModel = {};
 var viewModel = {
     exerciseList: ko.observableArray([]),
+    checkModel: ko.observable({}),
     comment: ko.observable()
 };
 ko.applyBindings(viewModel);
@@ -56,6 +57,7 @@ function getList() {
 }
 
 function showModal(role, exercise) {
+    $("#myModal").modal("show");
     if (role === "student" && exercise.IsChecked && !exercise.IsViewed) {
         $.ajax({
             url: "App/View",
@@ -79,10 +81,11 @@ function showModal(role, exercise) {
         player.wavesurfer().load(url);
     }
     else {
+        var width = $("#myModal .modal-content").width();
         player = videojs("myPlayback", {
             controls: true,
-            width: 600,
-            height: 200,
+            width: width - 30,
+            height: 150,
             fluid: false,
             plugins: {
                 wavesurfer: {
@@ -107,33 +110,35 @@ function showModal(role, exercise) {
         console.log('error:', error);
     });
 
-    checkModel = $.extend(true, {}, exercise);
-    viewModel.comment(checkModel.Comment);
-    $("#myModal").modal("show");
+    viewModel.checkModel = $.extend(true, {}, exercise);
+    viewModel.comment(viewModel.checkModel.Comment);
+    //$("#myModal").modal("show");
     setModal(role);
     player.on("waveReady", function () {
         var canvas = $("#myPlayback canvas")[0];
         var height = canvas.clientHeight;
         var width = canvas.clientWidth;
         var duration = Math.round(player.wavesurfer().getDuration() * 100) / 100;
-        for (var i = 0; i < checkModel.MarkArray.length; i++) {
-            var position = width / duration * checkModel.MarkArray[i].Time;
+        for (var i = 0; i < viewModel.checkModel.MarkArray.length; i++) {
+            var position = width / duration * viewModel.checkModel.MarkArray[i].Time;
             player.bug({
                 height: height + 'px',
                 opacity: 0.5,
                 padding: position + 'px',
                 width: 10 + "px",
-                color: getColor(checkModel.MarkArray[i].Type)
+                color: getColor(viewModel.checkModel.MarkArray[i].Type)
             });
         }
     });
 }
 
 function createRecord() {
+    $("#recordModal").modal("show");
+    var width = $("#recordModal .modal-content").width();
     var micRecorder = videojs("micRecorder", {
         controls: true,
-        width: 600,
-        height: 200,
+        width: width - 30,
+        height: 150,
         fluid: false,
         plugins: {
             wavesurfer: {
@@ -190,7 +195,7 @@ function addBug(type) {
     if (time < 0) {
         time = 0;
     }
-    checkModel.MarkArray.push({ Time: time, Type: type});
+    viewModel.checkModel.MarkArray.push({ Time: time, Type: type});
     var duration = Math.round(player.wavesurfer().getDuration() * 100) / 100;
     var canvas = $("#myPlayback canvas")[0];
     var height = canvas.clientHeight;
@@ -206,8 +211,8 @@ function addBug(type) {
 }
 
 function saveChecked() {
-    checkModel.Comment = viewModel.comment();
-    var data = JSON.stringify(checkModel);
+    viewModel.checkModel.Comment = viewModel.comment();
+    var data = JSON.stringify(viewModel.checkModel);
     $.ajax({
         url: "App/Save",
         type: "POST",
@@ -225,7 +230,7 @@ function saveChecked() {
 }
 
 function clearMarks() {
-    checkModel.MarkArray.length = 0;
+    viewModel.checkModel.MarkArray.length = 0;
     viewModel.comment(null);
     var marks = document.getElementsByClassName("mark");
     while (marks.length > 0) {
@@ -275,7 +280,6 @@ function setModal(role) {
         $("#actionButtons").show();
         break;
     case "student":
-        $("#myModal").modal("show");
         $("#mistakeButtons").hide();
         $("#teacherComment").hide();
         $("#studentComment").show();
