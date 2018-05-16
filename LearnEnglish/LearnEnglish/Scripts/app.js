@@ -1,10 +1,11 @@
 var player;
 var recordedBlob;
-//var checkModel = {};
+var isDrow = false;
+var checkModel = {};
 var viewModel = {
-    exerciseList: ko.observableArray([]),
-    checkModel: ko.observable({}),
-    comment: ko.observable()
+    exerciseList: ko.observableArray(),
+    comment: ko.observable(),
+    mistakeList: ko.observableArray()
 };
 ko.applyBindings(viewModel);
 
@@ -90,7 +91,7 @@ function showModal(role, exercise) {
             plugins: {
                 wavesurfer: {
                     src: url,
-                    msDisplayMax: 1,
+                    msDisplayMax: 10,
                     debug: true,
                     waveColor: "#36393b",
                     progressColor: "black",
@@ -110,24 +111,33 @@ function showModal(role, exercise) {
         console.log('error:', error);
     });
 
-    viewModel.checkModel = $.extend(true, {}, exercise);
-    viewModel.comment(viewModel.checkModel.Comment);
-    //$("#myModal").modal("show");
+    checkModel = $.extend(true, {}, exercise);
+    viewModel.comment(checkModel.Comment);
+    viewModel.mistakeList.removeAll();
+    for (var i = 0; i < checkModel.MarkArray.length; i++) {
+        viewModel.mistakeList.push(checkModel.MarkArray[i]);
+    }
     setModal(role);
     player.on("waveReady", function () {
-        var canvas = $("#myPlayback canvas")[0];
-        var height = canvas.clientHeight;
-        var width = canvas.clientWidth;
-        var duration = Math.round(player.wavesurfer().getDuration() * 100) / 100;
-        for (var i = 0; i < viewModel.checkModel.MarkArray.length; i++) {
-            var position = width / duration * viewModel.checkModel.MarkArray[i].Time;
-            player.bug({
-                height: height + 'px',
-                opacity: 0.5,
-                padding: position + 'px',
-                width: 10 + "px",
-                color: getColor(viewModel.checkModel.MarkArray[i].Type)
-            });
+        if (!isDrow) {
+            console.log("new event test");
+            isDrow = true;
+            var canvas = $("#myPlayback canvas")[1];
+            var height = canvas.clientHeight;
+            var width = canvas.clientWidth;
+            var duration = Math.round(player.wavesurfer().getDuration() * 100) / 100;
+            for (var i = 0; i < checkModel.MarkArray.length; i++) {
+                var position = width / duration * checkModel.MarkArray[i].Time;
+                var div = document.createElement("div");
+                div.style.width = 10 + "px";
+                div.style.height = height + "px";
+                div.style.opacity = 0.5;
+                div.style.background = getColor(checkModel.MarkArray[i].Type);
+                div.style.marginLeft = position + "px";
+                div.setAttribute("class", "vjs-bug mark");
+                div.setAttribute("id", "mark" + i);
+                $("#myPlayback").prepend(div);
+            }
         }
     });
 }
@@ -147,13 +157,13 @@ function createRecord() {
                 progressColor: "#black",
                 debug: true,
                 cursorWidth: 1,
-                msDisplayMax: 10,
+                msDisplayMax: 2,
                 hideScrollbar: true
             },
             record: {
                 audio: true,
                 video: false,
-                maxLength: 10,
+                maxLength: 120,
                 debug: true,
                 audioSampleRate: 22050,
                 audioChannels: 1
@@ -190,29 +200,39 @@ function createRecord() {
 }
 
 function addBug(type) {
-    var time = Math.round(player.wavesurfer().getCurrentTime() * 100) / 100;
-    time -= 0.1;
+    var time = player.wavesurfer().getCurrentTime();
+    time -= 0.5;
     if (time < 0) {
         time = 0;
     }
-    viewModel.checkModel.MarkArray.push({ Time: time, Type: type});
+    time = time.toFixed(2);
+    var mark = {
+        Time: time,
+        Type: type
+    }
+    checkModel.MarkArray.push(mark);
+    viewModel.mistakeList.push(mark);
+    console.log(viewModel.mistakeList());
     var duration = Math.round(player.wavesurfer().getDuration() * 100) / 100;
     var canvas = $("#myPlayback canvas")[0];
     var height = canvas.clientHeight;
     var width = canvas.clientWidth;
     var position = width / duration * time;
-    player.bug({
-        height: height + 'px',
-        opacity: 0.5,
-        padding: position + 'px',
-        width: 10 + "px",
-        color: getColor(type)
-    });
+    var div = document.createElement("div");
+    div.style.width = 10 + "px";
+    div.style.height = height + "px";
+    div.style.opacity = 0.5;
+    div.style.background = getColor(type);
+    div.style.marginLeft = position + "px";
+    div.setAttribute("class", "vjs-bug mark");
+    div.setAttribute("id", "mark" + (viewModel.mistakeList().length - 1));
+    $("#myPlayback").prepend(div);
+    console.log("marks:", document.getElementsByClassName("mark"));
 }
 
 function saveChecked() {
-    viewModel.checkModel.Comment = viewModel.comment();
-    var data = JSON.stringify(viewModel.checkModel);
+    checkModel.Comment = viewModel.comment();
+    var data = JSON.stringify(checkModel);
     $.ajax({
         url: "App/Save",
         type: "POST",
@@ -230,12 +250,14 @@ function saveChecked() {
 }
 
 function clearMarks() {
-    viewModel.checkModel.MarkArray.length = 0;
+    checkModel.MarkArray.length = 0;
+    viewModel.mistakeList.removeAll();
     viewModel.comment(null);
     var marks = document.getElementsByClassName("mark");
     while (marks.length > 0) {
         marks[0].remove();
     }
+    marks = document.getElementsByClassName("mark");
 }
 
 function remove() {
@@ -258,13 +280,13 @@ function remove() {
 
 function getColor(type) {
     switch (type) {
-    case 0:
-        return "red";
     case 1:
-        return "yellow";
+        return "red";
     case 2:
-        return "green";
+        return "yellow";
     case 3:
+        return "green";
+    case 4:
         return "blue";
     default:
         return "gray";
@@ -287,3 +309,9 @@ function setModal(role) {
         break;
     }
 }
+
+$('#myModal').on('hidden.bs.modal', function () {
+    console.log("modal closed");
+    isDrow = false;
+    //player.wavesurfer().destroy();
+})

@@ -76,6 +76,7 @@ namespace LearnEnglish.Controllers
         public async Task<IHttpActionResult> Save()
         {
             var data = JsonConvert.DeserializeObject<Exercise>(await Request.Content.ReadAsStringAsync());
+            data.MarkArray = data.MarkArray.OrderBy(x => x.Time).ToArray();
             var filter = Builders<Exercise>.Filter.Eq("_id", new ObjectId(data.Id));
             var update = Builders<Exercise>.Update.Set(x => x.MarkArray, data.MarkArray).Set(x => x.Comment, data.Comment).Set(x => x.IsChecked, true);
             var result = await _collection.UpdateOneAsync(filter, update);

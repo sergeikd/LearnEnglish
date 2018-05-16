@@ -52,6 +52,11 @@ input, select
     background-color: #EEE;
 }
 
+.video-js .vjs-bug {
+    display: inline-block;
+    position: absolute
+}
+
 .bootstrap-notify-container {
     max-width: 320px;
     text-align: center;

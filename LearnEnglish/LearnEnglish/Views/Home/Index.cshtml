@@ -9,7 +9,6 @@
     <title>@ViewBag.Title - Learn English</title>
     <link href="~/Content/video-js.min.css" rel="stylesheet">
     <link href="~/Content/videojs.record.min.css" rel="stylesheet">
-    <link href="~/Content/videojs-bug.css" rel="stylesheet">
 
     <script src="~/Scripts/jquery-3.3.1.min.js"></script>
     <script src="~/Scripts/knockout-3.4.2.js"></script>
@@ -20,7 +19,6 @@
     <script src="~/Scripts/lib/wavesurfer.microphone.min.js"></script>
     <script src="~/Scripts/lib/videojs.wavesurfer.min.js"></script>
     <script src="~/Scripts/lib/videojs.record.min.js"></script>
-    <script src="~/Scripts/lib/videojs-bug.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
     <script src="~/Scripts/bootstrap-notify.min.js"></script>
     <script src="~/Scripts/notifications.js"></script>
@@ -140,11 +138,33 @@
                             <audio id="myPlayback" class="video-js center-block"></audio>
                         </div>
                         <div class="text-center margin-top-20" id="mistakeButtons">
-                            <button type="button" class="btn btn-danger btn-lg" onclick="addBug(0)">Type 1</button>
-                            <button type="button" class="btn btn-warning btn-lg" onclick="addBug(1)">Type 2</button>
-                            <button type="button" class="btn btn-success btn-lg" onclick="addBug(2)">Type 3</button>
-                            <button type="button" class="btn btn-primary btn-lg" onclick="addBug(3)">Type 4</button>
+                            <button type="button" class="btn btn-danger btn-lg" onclick="addBug(1)">Type 1</button>
+                            <button type="button" class="btn btn-warning btn-lg" onclick="addBug(2)">Type 2</button>
+                            <button type="button" class="btn btn-success btn-lg" onclick="addBug(3)">Type 3</button>
+                            <button type="button" class="btn btn-primary btn-lg" onclick="addBug(4)">Type 4</button>
                         </div>
+                        <div data-bind="visible:mistakeList().length > 0">
+                            <label>Mistake List:</label>
+                            <table class="">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" style="padding-right: 10px">Time</th>
+                                        <th class="text-center">Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-bind="foreach: { data: mistakeList, as: 'mistake'}">
+                                    <tr class="text-center">
+                                        <td>
+                                            <span data-bind="text: mistake.Time"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text: mistake.Type"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
                         <label>Comment:</label>
                         <textarea id="teacherComment" class="form-control" rows="3" data-bind="value: comment"></textarea>
                         <textarea readonly id="studentComment" class="form-control" rows="3" data-bind="text: comment"></textarea>
